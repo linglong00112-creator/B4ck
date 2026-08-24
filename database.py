@@ -1,13 +1,22 @@
+import os
 import datetime
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, Text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-DB_PATH = "sqlite:///BlackMagicAI_bot.db"
-engine = create_engine(DB_PATH, echo=False)
+# ទាញយក DATABASE_URL ពី Railway, បើគ្មាន (ឧ. Run លើកុំព្យូទ័រខ្លួនឯង) វានឹងប្រើ SQLite
+DB_URL = os.getenv("DATABASE_URL", "sqlite:///BlackMagicAI_bot.db")
+
+# ចំណាំសំខាន់៖ URL របស់ Railway ផ្តើមដោយ postgres:// តែ SQLAlchemy ត្រូវការ postgresql://
+if DB_URL.startswith("postgres://"):
+    DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(DB_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
 class Base(DeclarativeBase):
     pass
+
+# សូមរក្សាកូដ Models ផ្សេងៗទៀតរបស់អ្នក (SignalRecord, TradeJournal...) ឲ្យនៅដដែល
 
 # -------------------- Models --------------------
 
